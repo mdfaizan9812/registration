@@ -1,0 +1,37 @@
+const User = require("./model");
+const bcrypt = require("bcrypt")
+const resetService = require("../reset/service");
+const { generateOTPCode } = require("../utilities/OTP/otpCode")
+
+const isUserExistByEmail = async (email) => {
+    return await User.findOne({ email });
+}
+
+const createUser = async (user) => {
+    return await User.create(user);
+}
+
+const generateOTP = async (email) => {
+    let otpCode;
+    while (true) {
+        otpCode = generateOTPCode();
+        let isFound = await resetService.isOTPExist(otpCode);
+        if (!isFound) {
+            break;
+        }
+    }
+    return await resetService.createOTP(email, otpCode);
+}
+
+// ------------------------------------------------------------------------------------
+
+const hashedPassword = async (password) => {
+    return await bcrypt.hash(password, 10);
+};
+
+module.exports = {
+    isUserExistByEmail,
+    createUser,
+    hashedPassword,
+    generateOTP
+}
