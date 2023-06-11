@@ -77,8 +77,36 @@ const validateOTP = (req, res, next) => {
     checker(schema, req, res, next);
 };
 
+const validatePassword = (req, res, next) => {
+    const schema = Joi.object({
+        email: Joi.string()
+            .email()
+            .min(3)
+            .max(50)
+            .required()
+            .trim()
+            .messages({
+                "string.min": "Email must have at least 3 characters",
+                'string.max': 'Email can have at most 50 characters',
+                'any.required': 'Email is required'
+            }),
+        password: Joi.string()
+            .min(6)
+            .max(25)
+            .trim()
+            .required()
+            .messages({
+                "string.min": "Password must have at least 6 characters",
+                "string.max": "Password can have at most 25 characters",
+                'any.required': 'Password is required'
+            }),
+    });
+    checker(schema, req, res, next);
+};
+
 
 module.exports = {
     validateUserRegister,
-    validateOTP
+    validateOTP,
+    validatePassword
 }

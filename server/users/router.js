@@ -13,4 +13,9 @@ Router.post("/verify",
     userApis.isMatchedOTP
 )
 
+Router.post("/login",
+    userValidation.validatePassword,
+    userApis.login
+)
+
 module.exports = Router

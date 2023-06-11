@@ -9,6 +9,8 @@ const registration = async (req, res, next) => {
     try {
 
         let { username, email, password } = req.body;
+        username = username.toLowerCase().trim();
+        email = email.toLowerCase().trim();
 
         const isUserExist = await userService.isUserExistByEmail(email);
 
@@ -36,6 +38,39 @@ const registration = async (req, res, next) => {
     }
 }
 
+// login User
+const login = async (req, res, next) => {
+    try {
+        let { email, password } = req.body;
+        email = email.toLowerCase().trim();
+        const existingUser = await userService.isUserExistByEmail(email);
+        if (!existingUser || existingUser.isDeleted === true) {
+            return next(new AppError(message.msg5, 400));
+        }
+
+        const matchPassword = await userService.comparePassword(password, existingUser.password);
+        if (!matchPassword) {
+            return next(new AppError(message.msg6, 400));
+        }
+        const token = userService.generate_Token({
+            email: existingUser.email,
+            id: existingUser._id
+        });
+        const responseData = {
+            _id: existingUser._id,
+            username: existingUser.username,
+            email: existingUser.email,
+        };
+        return res.status(200).json({
+            message: message.msg7,
+            token: token,
+            data: responseData
+        });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 const isMatchedOTP = async (req, res, next) => {
     try {
         const { otp, email } = req.body;
@@ -52,5 +87,6 @@ const isMatchedOTP = async (req, res, next) => {
 
 module.exports = {
     registration,
-    isMatchedOTP
+    isMatchedOTP,
+    login
 }

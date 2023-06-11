@@ -3,6 +3,9 @@ module.exports.message = {
     "msg2": "You have registered, need to verify your account",
     "msg3": "Wrong OTP",
     "msg4": "Your account has been verified",
+    "msg5": "User are not exist",
+    "msg6": "Wrong password",
+    "msg7": "Logged-in successfully",
 }
 
 
