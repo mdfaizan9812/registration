@@ -8,4 +8,9 @@ Router.post("/register",
     userApis.registration
 )
 
+Router.post("/verify",
+    userValidation.validateOTP,
+    userApis.isMatchedOTP
+)
+
 module.exports = Router

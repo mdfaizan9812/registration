@@ -36,6 +36,21 @@ const registration = async (req, res, next) => {
     }
 }
 
+const isMatchedOTP = async (req, res, next) => {
+    try {
+        const { otp, email } = req.body;
+        const matchedOTP = await userService.matchingOTP(email, otp);
+        if (!matchedOTP) {
+            return next(AppError(message.msg3, 400));
+        }
+        await userService.updateUser({ email }, { isDeleted: false });
+        return res.status(200).json(AppResponse(201, message.msg4));
+    } catch (error) {
+        console.log(error, "isMatchedOTP");
+    }
+}
+
 module.exports = {
-    registration
+    registration,
+    isMatchedOTP
 }

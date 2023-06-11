@@ -23,6 +23,14 @@ const generateOTP = async (email) => {
     return await resetService.createOTP(email, otpCode);
 }
 
+const matchingOTP = async (email, otp) => {
+    return await resetService.isMatchedOTP(email, otp);
+}
+
+const updateUser = async (query, data) => {
+    return await User.updateOne(query, data);
+}
+
 // ------------------------------------------------------------------------------------
 
 const hashedPassword = async (password) => {
@@ -33,5 +41,7 @@ module.exports = {
     isUserExistByEmail,
     createUser,
     hashedPassword,
-    generateOTP
+    generateOTP,
+    matchingOTP,
+    updateUser
 }
