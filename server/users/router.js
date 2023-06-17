@@ -18,4 +18,19 @@ Router.post("/login",
     userApis.login
 )
 
+Router.post("/sendOTP",
+    userValidation.validateEmail,
+    userApis.sendOTPForResetPassword
+)
+
+Router.post("/forgetPassword",
+    userValidation.validateForgetPassword,
+    userApis.forgetPassword
+)
+
+Router.post("/changePassword",
+    userValidation.validateChangePassword,
+    userApis.changePassword
+)
+
 module.exports = Router

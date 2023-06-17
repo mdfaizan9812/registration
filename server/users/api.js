@@ -45,12 +45,12 @@ const login = async (req, res, next) => {
         email = email.toLowerCase().trim();
         const existingUser = await userService.isUserExistByEmail(email);
         if (!existingUser || existingUser.isDeleted === true) {
-            return next(new AppError(message.msg5, 400));
+            return next(AppError(message.msg5, 400));
         }
 
         const matchPassword = await userService.comparePassword(password, existingUser.password);
         if (!matchPassword) {
-            return next(new AppError(message.msg6, 400));
+            return next(AppError(message.msg6, 400));
         }
         const token = userService.generate_Token({
             email: existingUser.email,
@@ -71,22 +71,86 @@ const login = async (req, res, next) => {
     }
 };
 
+
+
 const isMatchedOTP = async (req, res, next) => {
     try {
-        const { otp, email } = req.body;
+        const { otp, email, code } = req.body;
         const matchedOTP = await userService.matchingOTP(email, otp);
         if (!matchedOTP) {
             return next(AppError(message.msg3, 400));
         }
-        await userService.updateUser({ email }, { isDeleted: false });
-        return res.status(200).json(AppResponse(201, message.msg4));
+        if (code === MAILCODE.REGISTRATION) {
+            var msg = message.msg4;
+            await userService.updateUser({ email }, { isDeleted: false });
+        } else if (code === MAILCODE.RESET_PASSWORD) {
+            var msg = message.msg8;
+        } else {
+            return next(AppError(message.msg9, 400));
+        }
+        return res.status(200).json(AppResponse(200, msg));
     } catch (error) {
         console.log(error, "isMatchedOTP");
     }
 }
 
+const sendOTPForResetPassword = async (req, res, next) => {
+    try {
+        let { email } = req.body;
+        email = email.toLowerCase().trim();
+        const isUserExist = await userService.isUserExistByEmail(email);
+        if (!isUserExist || isUserExist.isDeleted === true) {
+            return next(AppError(message.msg5, 400));
+        }
+        const otpData = await userService.generateOTP(email)
+        sendMail({ username: isUserExist.username, email, OTP: otpData.code, code: MAILCODE.RESET_PASSWORD });
+        return res.status(200).json(AppResponse(200, message.msg8));
+    } catch (error) {
+        console.log(error, "isMatchedOTP");
+    }
+}
+
+const forgetPassword = async (req, res, next) => {
+    let { email, password, otp } = req.body;
+    email = email.toLowerCase().trim();
+    const isUserExist = await userService.isUserExistByEmail(email);
+    if (!isUserExist || isUserExist.isDeleted === true) {
+        return next(AppError(message.msg5, 400));
+    }
+
+    const matchedOTP = await userService.matchingOTP(email, otp);
+    if (!matchedOTP) {
+        return next(AppError(message.msg11, 400));
+    }
+    password = await userService.hashedPassword(password);
+    await userService.updateUser({ email }, { password });
+    return res.status(200).json(AppResponse(200, message.msg10));
+}
+
+const changePassword = async (req, res, next) => {
+    let { email, previousPassword, password } = req.body;
+    email = email.toLowerCase().trim();
+    const isUserExist = await userService.isUserExistByEmail(email);
+    if (!isUserExist || isUserExist.isDeleted === true) {
+        return next(AppError(message.msg5, 400));
+    }
+
+    const matchPassword = await userService.comparePassword(previousPassword, isUserExist.password);
+    if (!matchPassword) {
+        return next(AppError(message.msg12, 400));
+    }
+
+    password = await userService.hashedPassword(password);
+    await userService.updateUser({ email }, { password });
+    return res.status(200).json(AppResponse(200, message.msg10));
+}
+
+
 module.exports = {
     registration,
     isMatchedOTP,
-    login
+    login,
+    sendOTPForResetPassword,
+    forgetPassword,
+    changePassword
 }

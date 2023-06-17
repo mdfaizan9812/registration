@@ -1,4 +1,4 @@
-const { sendOtpCodeTemplate } = require("./mailTemplates");
+const { sendOtpCodeTemplate, sendOtpCodeTemplateResetPassword } = require("./mailTemplates");
 const { MAILCODE } = require("../../constant")
 const nodemailer = require('nodemailer')
 
@@ -17,6 +17,9 @@ const sendMail = async (data) => {
         if (data.code === MAILCODE.REGISTRATION) {
             html = sendOtpCodeTemplate(data.username, data.OTP);
             subject = "Registration OTP - Complete your moneymate registration";
+        } else if (data.code === MAILCODE.RESET_PASSWORD) {
+            html = sendOtpCodeTemplateResetPassword(data.username, data.OTP);
+            subject = "Reset Password OTP";
         }
 
         const mailOptions = {
