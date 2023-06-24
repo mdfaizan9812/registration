@@ -3,10 +3,16 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken");
 const resetService = require("../reset/service");
 const { generateOTPCode } = require("../utilities/OTP/otpCode")
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 
 const isUserExistByEmail = async (email) => {
     return await User.findOne({ email });
+}
+
+const isUserExistById = async (userId) => {
+    return await User.findById(userId);
 }
 
 const createUser = async (user) => {
@@ -33,6 +39,20 @@ const updateUser = async (query, data) => {
     return await User.updateOne(query, data);
 }
 
+const getUserInfo = async (id) => {
+    return await User.aggregate([
+        { $match: { _id: new ObjectId(id), isDeleted: false } },
+        {
+            $project: {
+                isDeleted: 0,
+                createdAt: 0,
+                updatedAt: 0,
+                password: 0
+            }
+        }
+    ])
+}
+
 // ------------------------------------------------------------------------------------
 
 const hashedPassword = async (password) => {
@@ -49,6 +69,27 @@ const generate_Token = (payload) => {
     return jwt.sign(payload, process.env.SECRETKEY);
 };
 
+// user verifycation
+const verifyUser = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1];
+    if (token == null) {
+        return res.sendStatus(404);
+    }
+    if (!token) {
+        return next(new AppError(i18n.__("msg78"), 401));
+    }
+    jwt.verify(token, process.env.SECRETKEY, async (err, user) => {
+        if (err) {
+            return next(new AppError(i18n.__("msg79"), 403));
+        }
+        req.user = user;
+        const userDetails = await isUserExistById(req.user.id);
+        req.user.role = userDetails.role;
+        next();
+    });
+};
+
 module.exports = {
     isUserExistByEmail,
     createUser,
@@ -56,6 +97,9 @@ module.exports = {
     generateOTP,
     matchingOTP,
     updateUser,
+    getUserInfo,
     comparePassword,
-    generate_Token
+    generate_Token,
+    isUserExistById,
+    verifyUser
 }

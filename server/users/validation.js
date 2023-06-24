@@ -204,11 +204,46 @@ const validateChangePassword = (req, res, next) => {
 }
 
 
+const validateUserInfo = (req, res, next) => {
+    const schema = Joi.object({
+        gender: Joi.string().trim().valid("male", "female", "other").required(),
+        phoneNumber: Joi.string().regex(/^(?=.*[0-9])\d*$/).length(10).required(),
+        dob: Joi.date().max(new Date()).required()
+    });
+    checker(schema, req, res, next);
+}
+
+const validateUpdateUser = (req, res, next) => {
+    const schema = Joi.object({
+        username: Joi.string()
+            .regex(/^[a-z A-Z]+$/)
+            .min(3)
+            .max(25)
+            .trim()
+            .messages({
+                'string.base': 'Username must be a string',
+                'string.empty': 'Username cannot be empty',
+                'string.min': 'Username must have at least 3 characters',
+                'string.max': 'Username can have at most 25 characters',
+                'any.required': 'Username is required'
+            }),
+        gender: Joi.string().trim().valid("male", "female", "other"),
+        phoneNumber: Joi.string().regex(/^(?=.*[0-9])\d*$/).length(10),
+        dob: Joi.date().max(new Date()),
+        userId: Joi.string().required()
+    }).or("username", "gender", "phoneNumber", "dob").required();
+    checker(schema, req, res, next);
+};
+
+
+
 module.exports = {
     validateUserRegister,
     validateOTP,
     validatePassword,
     validateEmail,
     validateForgetPassword,
-    validateChangePassword
+    validateChangePassword,
+    validateUserInfo,
+    validateUpdateUser
 }

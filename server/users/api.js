@@ -3,7 +3,8 @@ const AppError = require("../global/error")
 const AppResponse = require("../global/response")
 const { message } = require("../constant");
 const { sendMail } = require("../utilities/mail/mailService");
-const { MAILCODE } = require("../constant");
+const { MAILCODE, ROLES } = require("../constant");
+const moment = require("moment");
 
 const registration = async (req, res, next) => {
     try {
@@ -123,7 +124,7 @@ const forgetPassword = async (req, res, next) => {
         return next(AppError(message.msg11, 400));
     }
     password = await userService.hashedPassword(password);
-    await userService.updateUser({ email }, { password });
+    await userService.updateUser({ email, isDeleted: false }, { password });
     return res.status(200).json(AppResponse(200, message.msg10));
 }
 
@@ -141,8 +142,91 @@ const changePassword = async (req, res, next) => {
     }
 
     password = await userService.hashedPassword(password);
-    await userService.updateUser({ email }, { password });
+    await userService.updateUser({ email, isDeleted: false }, { password });
     return res.status(200).json(AppResponse(200, message.msg10));
+}
+
+
+const moreInfo = async (req, res, next) => {
+    let { gender, phoneNumber, dob } = req.body;
+    const userId = req.user.id;
+    const userDetails = await userService.isUserExistById(userId);
+    if (!userDetails || userDetails.isDeleted === true) {
+        return next(AppError(message.msg5, 400));
+    }
+
+    dob = moment(dob).utc();
+    await userService.updateUser({ _id: userId, isDeleted: false }, { gender, phoneNumber, dob });
+    return res.status(200).json(AppResponse(200, message.msg13));
+}
+
+const getUserInfo = async (req, res, next) => {
+    const { userId } = req.params;
+    if (userId.toString() !== req.user.id) {
+        return next(AppError(message.msg14, 400));
+    }
+    const userDetails = await userService.getUserInfo(userId);
+    if (!userDetails.length) {
+        return next(AppError(message.msg5, 400));
+    }
+
+    return res.status(200).json(AppResponse(200, message.success, userDetails[0]));
+}
+
+const updateUser = async (req, res, next) => {
+    try {
+        let { username, phoneNumber, gender, dob } = req.body;
+        const userParamId = req.params.userId
+        const userId = req.user.id;
+        const userRole = req.user.role;
+
+        if ((userRole === ROLES.USER && userParamId !== userId)) {
+            return next(AppError(message.msg18, 400));
+        }
+
+        const userData = {};
+        if (username) {
+            username = username.toLowerCase().trim();
+            userData.username = username;
+        }
+        if (gender) {
+            gender = gender.toLowerCase().trim();
+            userData.gender = gender;
+        }
+        if (dob) {
+            dob = moment(dob).utc();
+            userData.dob = dob;
+        }
+        if (phoneNumber) {
+            userData.phoneNumber = phoneNumber
+        }
+
+        await userService.updateUser({ _id: userParamId }, userData);
+        return res.status(200).json(AppResponse(200, message.msg19));
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const deleteUser = async (req, res, next) => {
+    try {
+        const userId = req.params.userId
+        const reqUserId = req.user.id;
+        const userRole = req.user.role;
+
+        if ((userRole === ROLES.USER && userId !== reqUserId)) {
+            return next(AppError(message.msg20, 400));
+        }
+
+        if ((userRole === ROLES.ADMIN && userId === reqUserId)) {
+            return next(AppError(message.msg22, 400));
+        }
+
+        await userService.updateUser({ _id: userId }, { isDeleted: true });
+        return res.status(200).json(AppResponse(200, message.msg21));
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 
@@ -152,5 +236,9 @@ module.exports = {
     login,
     sendOTPForResetPassword,
     forgetPassword,
-    changePassword
+    changePassword,
+    moreInfo,
+    getUserInfo,
+    updateUser,
+    deleteUser
 }
