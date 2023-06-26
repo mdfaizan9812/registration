@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const resetService = require("../reset/service");
 const { generateOTPCode } = require("../utilities/OTP/otpCode")
 const mongoose = require("mongoose");
+const { ROLES, message } = require("../constant");
+const AppError = require("../global/error");
 const ObjectId = mongoose.Types.ObjectId;
 
 
@@ -77,11 +79,11 @@ const verifyUser = (req, res, next) => {
         return res.sendStatus(404);
     }
     if (!token) {
-        return next(new AppError(i18n.__("msg78"), 401));
+        return next(AppError(message.msg25, 400));
     }
     jwt.verify(token, process.env.SECRETKEY, async (err, user) => {
         if (err) {
-            return next(new AppError(i18n.__("msg79"), 403));
+            return next(AppError(message.msg26, 400));
         }
         req.user = user;
         const userDetails = await isUserExistById(req.user.id);
@@ -89,6 +91,14 @@ const verifyUser = (req, res, next) => {
         next();
     });
 };
+
+const verifyAdmin = (req, res, next) => {
+    const admin = req.user.role;
+    if (admin === ROLES.ADMIN) {
+        next();
+    }
+    return next(AppError(message.msg27, 400));
+}
 
 module.exports = {
     isUserExistByEmail,
@@ -101,5 +111,6 @@ module.exports = {
     comparePassword,
     generate_Token,
     isUserExistById,
-    verifyUser
+    verifyUser,
+    verifyAdmin
 }

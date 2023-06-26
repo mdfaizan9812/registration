@@ -17,9 +17,9 @@ app.use("/api/v1", require("./router"));
 app.use((err, req, res, next) => {
     err.status = err.status ? err.status : 400;
     if (err?.message?.details) {
-        res.status(err.status).json({ status: err.status, message: err.message.details[0].message })
+        return res.status(err.status).json({ status: err.status, message: err.message.details[0].message })
     } else if (err.message) {
-        res.status(err.status).json({ status: err.status, message: err.message })
+        return res.status(err.status).json({ status: err.status, message: err.message })
     }
 })
 

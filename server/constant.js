@@ -22,12 +22,20 @@ module.exports.message = {
     "msg20": "You can not delete others information",
     "msg21": "User deleted successfully",
     "msg22": "Admin can not be deleted",
+    "msg23": "Category already exists",
+    "msg24": "Category has been created",
+    "msg25": "Token not found",
+    "msg26": "Token is not valid",
+    "msg27": "Only admin can do",
+    "msg28": "Category not found",
+    "msg29": "Category deleted successfully",
 }
 
 
 module.exports.MAILCODE = {
     REGISTRATION: "registration",
     RESET_PASSWORD: "resetpassword",
+    CATEGORY: "category",
 };
 
 
