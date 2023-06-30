@@ -4,5 +4,6 @@ const Router = express.Router();
 Router.use("/user", require("./users/router"));
 Router.use("/asset", require("./asset/router"));
 Router.use("/category", require("./category/router"));
+Router.use("/expense", require("./expenses/router"));
 
 module.exports = Router

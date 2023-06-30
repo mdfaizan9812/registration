@@ -29,6 +29,17 @@ module.exports.message = {
     "msg27": "Only admin can do",
     "msg28": "Category not found",
     "msg29": "Category deleted successfully",
+    "msg30": "Expense created successfully",
+    "msg31": "Expense not found",
+    "msg32": "You can not update other's expenses",
+    "msg33": "You can not delete other's expenses",
+    "msg34": "Expense deleted successfully",
+    "msg35": "All category fetched successfully",
+    "msg36": "All expenses fetched successfully",
+    "msg37": "Last three months expenses fetched successfully",
+    "msg38": "You can not get other's expenses",
+    "msg39": "Expense data fetched successfully",
+    "msg40": " Either date or category is required"
 }
 
 

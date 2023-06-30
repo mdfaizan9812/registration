@@ -62,7 +62,7 @@ const getAllCategory = async (req, res, next) => {
         if (!category.length) {
             return next(AppError(message.msg28, 400));
         }
-        return res.status(200).json(AppResponse(200, message.msg28, category));
+        return res.status(200).json(AppResponse(200, message.msg35, category));
     } catch (error) {
         console.log(error);
     }
