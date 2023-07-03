@@ -1,6 +1,7 @@
 const Expense = require("./model");
 const moment = require("moment");
 const mongoose = require("mongoose");
+const { pipeline } = require("nodemailer/lib/xoauth2");
 const ObjectId = mongoose.Types.ObjectId;
 
 const create = async (data) => {
@@ -164,9 +165,77 @@ const getExpenseByDate = async (userId, date, categoryId) => {
             }
         }
     }
-    const tomorrow = moment(date).utc().add(1, "days");
     return await Expense.aggregate([
         query
+    ])
+}
+
+const getTotalExpenseByPaymentMethod = async (userId, type) => {
+    let queryExpense;
+    if (type === "method") {
+        queryExpense = "$paymentMethod"
+    } else if (type === "category") {
+        queryExpense = "$categoryId"
+    } else {
+        queryExpense = null;
+    }
+    return await Expense.aggregate([
+        {
+            $match: {
+                userId: new ObjectId(userId),
+                isDeleted: false
+            }
+        },
+        {
+            $group: {
+                _id: queryExpense,
+                totalExpenses: { $sum: "$cost" }
+            }
+        },
+        {
+            $lookup: {
+                from: "categories",
+                let: { "categoryId": "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$_id", "$$categoryId"] },
+                                    { isDeleted: false },
+                                ]
+                            }
+                        }
+                    }
+                ],
+                as: "category"
+            }
+        },
+        {
+            $addFields: {
+                categoryName:
+                {
+                    $cond:
+                    {
+                        if: { $gte: [{ $size: "$category" }, 1] },
+                        then: "$category.name",
+                        else: []
+                    }
+                }
+            }
+        },
+        {
+            $unwind: {
+                path: "$categoryName",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $project: {
+                category: 0
+            }
+        }
+
     ])
 }
 module.exports = {
@@ -175,5 +244,6 @@ module.exports = {
     findExpense,
     getAllExpensesByMonth,
     LastThreeMonthsExpenses,
-    getExpenseByDate
+    getExpenseByDate,
+    getTotalExpenseByPaymentMethod
 }

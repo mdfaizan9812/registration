@@ -39,7 +39,22 @@ module.exports.message = {
     "msg37": "Last three months expenses fetched successfully",
     "msg38": "You can not get other's expenses",
     "msg39": "Expense data fetched successfully",
-    "msg40": " Either date or category is required"
+    "msg40": " Either date or category is required",
+    "msg41": "This category's budget is exist",
+    "msg42": "Budget has been set successfully",
+    "msg43": "Budget is not exist",
+    "msg44": "You can not update other's budget",
+    "msg45": "Update budget successfully",
+    "msg46": "You can not delete other's budget",
+    "msg47": "Delete budget successfully",
+    "msg48": "All budget fetched successfully",
+    "msg49": "Please update your phone number before using this service",
+    "msg50": "Created successfully",
+    "msg51": "No data found",
+    "msg52": "You can not update others's borrow or lent",
+    "msg53": "Updated successfully",
+    "msg53": "Deleted successfully",
+    "msg54": "Fetched successfully",
 }
 
 
