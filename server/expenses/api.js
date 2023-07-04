@@ -144,11 +144,11 @@ const getExpenseByDate = async (req, res) => {
     }
 }
 
-const getTotalExpenseByPaymentMethod = async (req, res) => {
+const getTotalExpenseByPaymentMethodOrCategory = async (req, res) => {
     try {
         const userId = req.user.id;
         const type = req.query?.type?.toLowerCase()?.trim();
-        const getTotalExpense = await expenseService.getTotalExpenseByPaymentMethod(userId, type);
+        const getTotalExpense = await expenseService.getTotalExpenseByPaymentMethodOrCategory(userId, type);
         return res.status(200).json(AppResponse(200, message.msg39, getTotalExpense));
 
     } catch (error) {
@@ -165,5 +165,5 @@ module.exports = {
     getAllExpensesByMonth,
     getLastThreeMonthsExpenses,
     getExpenseByDate,
-    getTotalExpenseByPaymentMethod
+    getTotalExpenseByPaymentMethodOrCategory
 }

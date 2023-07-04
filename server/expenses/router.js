@@ -18,7 +18,7 @@ Router.route("/:id")
     .delete(userServices.verifyUser,
         expenseApis.deleteExpense
     )
-Router.get("/paymentMethod", userServices.verifyUser, expenseApis.getTotalExpenseByPaymentMethod);
+Router.get("/paymentMethod", userServices.verifyUser, expenseApis.getTotalExpenseByPaymentMethodOrCategory);
 Router.get("/", userServices.verifyUser, expenseApis.getAllExpensesByMonth);
 Router.get("/:id", userServices.verifyUser, expenseApis.getLastThreeMonthsExpenses);
 Router.get("/date/:id", userServices.verifyUser, expenseApis.getExpenseByDate);

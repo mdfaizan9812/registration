@@ -170,7 +170,7 @@ const getExpenseByDate = async (userId, date, categoryId) => {
     ])
 }
 
-const getTotalExpenseByPaymentMethod = async (userId, type) => {
+const getTotalExpenseByPaymentMethodOrCategory = async (userId, type) => {
     let queryExpense;
     if (type === "method") {
         queryExpense = "$paymentMethod"
@@ -238,6 +238,7 @@ const getTotalExpenseByPaymentMethod = async (userId, type) => {
 
     ])
 }
+
 module.exports = {
     create,
     updateExpense,
@@ -245,5 +246,5 @@ module.exports = {
     getAllExpensesByMonth,
     LastThreeMonthsExpenses,
     getExpenseByDate,
-    getTotalExpenseByPaymentMethod
+    getTotalExpenseByPaymentMethodOrCategory,
 }
