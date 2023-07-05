@@ -36,7 +36,7 @@ const updateBudget = async (req, res, next) => {
             return next(AppError(message.msg43, 400));
         }
 
-        if (userId !== isExist.userId.toString() && req.role === ROLES.USER) {
+        if (userId !== isExist.userId.toString()) {
             return next(AppError(message.msg44, 400));
         }
 
@@ -58,7 +58,7 @@ const deleteBudget = async (req, res, next) => {
             return next(AppError(message.msg43, 400));
         }
 
-        if (userId !== isExist.userId.toString() && req.role === ROLES.USER) {
+        if (userId !== isExist.userId.toString()) {
             return next(AppError(message.msg46, 400));
         }
 

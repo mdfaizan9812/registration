@@ -42,7 +42,7 @@ Router.post("/moreinfo",
 
 Router.route("/:userId")
     .get(userServices.verifyUser, userApis.getUserInfo)
-    .patch(userValidation.validateUpdateUser, userServices.verifyUser, userApis.updateUser)
+    .patch(userServices.verifyUser, userValidation.validateUpdateUser, userApis.updateUser)
     .delete(userServices.verifyUser, userApis.deleteUser)
 
 module.exports = Router

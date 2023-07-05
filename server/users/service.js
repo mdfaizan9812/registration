@@ -95,7 +95,7 @@ const verifyUser = (req, res, next) => {
 const verifyAdmin = (req, res, next) => {
     const admin = req.user.role;
     if (admin === ROLES.ADMIN) {
-        next();
+        return next();
     }
     return next(AppError(message.msg27, 400));
 }

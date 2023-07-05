@@ -20,6 +20,7 @@ const addCategory = async (req, res, next) => {
             categoryDetails.isDeleted = false;
             categoryDetails.description = description;
             categoryDetails.save();
+            createdCategory = categoryDetails
         } else {
             createdCategory = await categoryService.addCategory({ name, description });
         }
@@ -41,13 +42,10 @@ const updateCategory = async (req, res, next) => {
             return next(AppError(message.msg23, 400));
         }
 
-        let categoryData = {};
-        if (name) {
-            categoryData.name = name;
-        }
-        if (description) {
-            categoryData.description = description;
-        }
+        let categoryData = {
+            name,
+            description
+        };
 
         await categoryService.updateCategory({ _id: categoryId }, categoryData);
         return res.status(200).json(AppResponse(200, message.msg25));
@@ -73,7 +71,7 @@ const deleteCategory = async (req, res, next) => {
         const categoryId = req.params.id
 
         const categoryDetails = await categoryService.findCategory({ _id: categoryId })
-        if (categoryDetails && categoryDetails.isDeleted === true) {
+        if (!categoryDetails && categoryDetails.isDeleted === true) {
             return next(AppError(message.msg28, 400));
         }
 

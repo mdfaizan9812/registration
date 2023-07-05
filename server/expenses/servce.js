@@ -1,7 +1,6 @@
 const Expense = require("./model");
 const moment = require("moment");
 const mongoose = require("mongoose");
-const { pipeline } = require("nodemailer/lib/xoauth2");
 const ObjectId = mongoose.Types.ObjectId;
 
 const create = async (data) => {
@@ -16,7 +15,7 @@ const findExpense = async (query) => {
     return await Expense.findOne(query);
 }
 
-const getAllExpensesByMonth = async (page, limit, month, year) => {
+const getAllExpensesByMonth = async (page, limit, month, year, userId) => {
     if (!month || !year) {
         month = moment().month();
         year = moment().year();
@@ -36,7 +35,8 @@ const getAllExpensesByMonth = async (page, limit, month, year) => {
                                 date: {
                                     $gte: firstDayOfMonth,
                                     $lte: lastDayOfMonth
-                                }
+                                },
+                                userId: new ObjectId(userId)
                             },
                         }
                     ],
@@ -47,7 +47,8 @@ const getAllExpensesByMonth = async (page, limit, month, year) => {
                                 date: {
                                     $gte: firstDayOfMonth,
                                     $lte: lastDayOfMonth
-                                }
+                                },
+                                userId: new ObjectId(userId)
                             },
 
                         }, {
@@ -72,7 +73,8 @@ const getAllExpensesByMonth = async (page, limit, month, year) => {
                                 date: {
                                     $gte: firstDayOfMonth,
                                     $lte: lastDayOfMonth
-                                }
+                                },
+                                userId: new ObjectId(userId)
                             },
                         },
                         { $skip: (page - 1) * limit },
@@ -85,7 +87,8 @@ const getAllExpensesByMonth = async (page, limit, month, year) => {
                                 date: {
                                     $gte: firstDayOfMonth,
                                     $lte: lastDayOfMonth
-                                }
+                                },
+                                userId: new ObjectId(userId)
                             },
 
                         },
@@ -105,7 +108,8 @@ const getAllExpensesByMonth = async (page, limit, month, year) => {
                                 date: {
                                     $gte: firstDayOfMonth,
                                     $lte: lastDayOfMonth
-                                }
+                                },
+                                userId: new ObjectId(userId)
                             }
                         },
                         { $count: "totalExpensesCount" }

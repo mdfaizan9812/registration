@@ -23,9 +23,7 @@ const registration = async (req, res, next) => {
         let user;
         if (isUserExist) {
             isUserExist.username = username;
-            isUserExist.email = email;
             isUserExist.password = password;
-            isUserExist.isDeleted = true;
             isUserExist.save();
             user = isUserExist;
         } else {
@@ -61,6 +59,7 @@ const login = async (req, res, next) => {
             _id: existingUser._id,
             username: existingUser.username,
             email: existingUser.email,
+            role: existingUser.role,
         };
         return res.status(200).json({
             message: message.msg7,
@@ -184,22 +183,12 @@ const updateUser = async (req, res, next) => {
             return next(AppError(message.msg18, 400));
         }
 
-        const userData = {};
-        if (username) {
-            username = username.toLowerCase().trim();
-            userData.username = username;
-        }
-        if (gender) {
-            gender = gender.toLowerCase().trim();
-            userData.gender = gender;
-        }
-        if (dob) {
-            dob = moment(dob).utc();
-            userData.dob = dob;
-        }
-        if (phoneNumber) {
-            userData.phoneNumber = phoneNumber
-        }
+        const userData = {
+            username: username ? username.toLowerCase().trim() : undefined,
+            gender: gender ? gender.toLowerCase().trim() : undefined,
+            dob: dob ? moment(dob).utc() : undefined,
+            phoneNumber
+        };
 
         await userService.updateUser({ _id: userParamId }, userData);
         return res.status(200).json(AppResponse(200, message.msg19));

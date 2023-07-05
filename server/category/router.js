@@ -11,7 +11,11 @@ Router.post("/create",
     categoryApis.addCategory
 )
 
-Router.get("/", userServices.verifyUser, categoryApis.getAllCategory)
+Router.get("/",
+    userServices.verifyUser,
+    categoryApis.getAllCategory
+)
+
 Router.route("/:id")
     .patch(userServices.verifyUser,
         userServices.verifyAdmin,
@@ -20,6 +24,7 @@ Router.route("/:id")
     )
     .delete(userServices.verifyUser,
         userServices.verifyAdmin,
-        categoryApis.deleteCategory)
+        categoryApis.deleteCategory
+    )
 
 module.exports = Router

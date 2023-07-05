@@ -72,29 +72,29 @@ const getAllExpensesByMonth = async (req, res) => {
         let { page, limit, month, year } = req.query;
         page = Number(page);
         limit = Number(limit);
+        const userId = req.user.id;
 
         // find all expenses
-        const allExpenses = await expenseService.getAllExpensesByMonth(page, limit, month, year)
-        console.log(allExpenses);
+        const allExpenses = await expenseService.getAllExpensesByMonth(page, limit, month, year, userId);
         if (allExpenses.length === 0) {
             return next(AppError(message.msg31, 400));
         }
         if (!page || !limit) {
-            allExpenses[0].totalExpenses = allExpenses[0].totalExpenses[0].totalAmount
+            allExpenses[0].totalExpenses = allExpenses[0].totalExpenses[0]?.totalAmount
             return res.status(200).json(AppResponse(200, message.msg36, allExpenses[0]));
         }
 
-        allExpenses[0].totalExpenses = allExpenses[0].totalExpenses[0].totalAmount
+        allExpenses[0].totalExpenses = allExpenses[0].totalExpenses[0]?.totalAmount
         return res.status(200).json(
             AppResponse(
                 200,
                 message.msg36,
                 {
-                    total: allExpenses[0].totalCount[0].totalExpensesCount,
+                    total: allExpenses[0].totalCount[0]?.totalExpensesCount,
                     currentPage: parseInt(page),
                     prevPage: page <= 1 ? 1 : parseInt(page) - 1,
                     maxPage: Math.ceil(
-                        allExpenses[0].totalCount[0].totalExpensesCount / limit
+                        allExpenses[0].totalCount[0]?.totalExpensesCount / limit
                     ),
                     allExpenses: allExpenses[0]
                 }
@@ -104,10 +104,10 @@ const getAllExpensesByMonth = async (req, res) => {
     }
 }
 
-const getLastThreeMonthsExpenses = async (req, res) => {
+const getLastThreeMonthsExpenses = async (req, res, next) => {
     try {
         const userId = req.params.id;
-        if (userId !== req.user.id && req.user.role === ROLES.USER) {
+        if (userId !== req.user.id) {
             return next(AppError(message.msg38, 400));
         }
         const expenseData = await expenseService.LastThreeMonthsExpenses(userId);
@@ -133,7 +133,7 @@ const getExpenseByDate = async (req, res) => {
         }
 
         const userId = req.params.id;
-        if (userId !== req.user.id && req.user.role === ROLES.USER) {
+        if (userId !== req.user.id) {
             return next(AppError(message.msg38, 400));
         }
 
