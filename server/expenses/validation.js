@@ -112,7 +112,48 @@ const validateUpdateExpense = (req, res, next) => {
     checker(schema, req, res, next);
 };
 
+const validateKeysAndType = (req, res, next) => {
+    const schema = Joi.object({
+        type: Joi.string()
+            .regex(/^[a-z A-Z]+$/)
+            .min(3)
+            .max(25)
+            .trim()
+            .messages({
+                'string.base': 'type must be a string',
+                'string.empty': 'type cannot be empty',
+                'string.min': 'type must have at least 3 characters',
+                'string.max': 'type can have at most 25 characters',
+                'any.required': 'type is required'
+            }),
+        key1: Joi.number()
+            .min(2010)
+            .max(2050)
+            .required()
+            .messages({
+                'string.base': 'key1 must be a string',
+                'string.empty': 'key1 cannot be empty',
+                'string.min': 'key1 must have at least 4 characters',
+                'string.max': 'key1 can have at most 4 characters',
+                'any.required': 'key1 is required'
+            }),
+        key2: Joi.number()
+            .min(1)
+            .max(31)
+            .required()
+            .messages({
+                'string.base': 'key2 must be a string',
+                'string.empty': 'key2 cannot be empty',
+                'string.min': 'key2 must have at least 2 characters',
+                'string.max': 'key2 can have at most 2 characters',
+                'any.required': 'key2 is required'
+            }),
+    });
+    checker(schema, req, res, next);
+};
+
 module.exports = {
     validateAddExpense,
-    validateUpdateExpense
+    validateUpdateExpense,
+    validateKeysAndType
 }

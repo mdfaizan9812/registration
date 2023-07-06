@@ -48,7 +48,7 @@ const updateCategory = async (req, res, next) => {
         };
 
         await categoryService.updateCategory({ _id: categoryId }, categoryData);
-        return res.status(200).json(AppResponse(200, message.msg25));
+        return res.status(200).json(AppResponse(200, message.msg53));
     } catch (error) {
         console.log(error);
     }

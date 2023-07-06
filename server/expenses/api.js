@@ -67,7 +67,7 @@ const deleteExpense = async (req, res, next) => {
     }
 }
 
-const getAllExpensesByMonth = async (req, res) => {
+const getAllExpensesByMonth = async (req, res, next) => {
     try {
         let { page, limit, month, year } = req.query;
         page = Number(page);
@@ -117,7 +117,7 @@ const getLastThreeMonthsExpenses = async (req, res, next) => {
     }
 }
 
-const getExpenseByDate = async (req, res) => {
+const getExpenseByDate = async (req, res, next) => {
     try {
         const { key1, key2, key3, catId } = req.query;
 
@@ -144,13 +144,15 @@ const getExpenseByDate = async (req, res) => {
     }
 }
 
-const getTotalExpenseByPaymentMethodOrCategory = async (req, res) => {
+const getTotalExpenseByPaymentMethodOrCategory = async (req, res, next) => {
     try {
         const userId = req.user.id;
         const type = req.query?.type?.toLowerCase()?.trim();
-        const getTotalExpense = await expenseService.getTotalExpenseByPaymentMethodOrCategory(userId, type);
+        const year = req.query.key1
+        const month = req.query.key2
+        let date = `${year}-${month}-01`
+        const getTotalExpense = await expenseService.getTotalExpenseByPaymentMethodOrCategory(userId, date, type);
         return res.status(200).json(AppResponse(200, message.msg39, getTotalExpense));
-
     } catch (error) {
         console.log(error);
     }

@@ -4,6 +4,12 @@ const expenseApis = require('./api');
 const expenseValidation = require('./validation.js');
 const userServices = require('../users/service');
 
+Router.get("/paymentMethod",
+    userServices.verifyUser,
+    expenseValidation.validateKeysAndType,
+    expenseApis.getTotalExpenseByPaymentMethodOrCategory
+);
+
 Router.post("/add",
     userServices.verifyUser,
     expenseValidation.validateAddExpense,
@@ -18,9 +24,11 @@ Router.route("/:id")
     .delete(userServices.verifyUser,
         expenseApis.deleteExpense
     )
-Router.get("/paymentMethod", userServices.verifyUser, expenseApis.getTotalExpenseByPaymentMethodOrCategory);
+    .get(userServices.verifyUser,
+        expenseApis.getLastThreeMonthsExpenses
+    )
+
 Router.get("/", userServices.verifyUser, expenseApis.getAllExpensesByMonth);
-Router.get("/:id", userServices.verifyUser, expenseApis.getLastThreeMonthsExpenses);
 Router.get("/date/:id", userServices.verifyUser, expenseApis.getExpenseByDate);
 
 

@@ -174,7 +174,7 @@ const getExpenseByDate = async (userId, date, categoryId) => {
     ])
 }
 
-const getTotalExpenseByPaymentMethodOrCategory = async (userId, type) => {
+const getTotalExpenseByPaymentMethodOrCategory = async (userId, date, type) => {
     let queryExpense;
     if (type === "method") {
         queryExpense = "$paymentMethod"
@@ -183,11 +183,17 @@ const getTotalExpenseByPaymentMethodOrCategory = async (userId, type) => {
     } else {
         queryExpense = null;
     }
+    const startOfMonth = moment(date).toDate()
+    const endOfMonth = moment(date).endOf("month").toDate()
     return await Expense.aggregate([
         {
             $match: {
                 userId: new ObjectId(userId),
-                isDeleted: false
+                isDeleted: false,
+                date: {
+                    $gte: startOfMonth,
+                    $lt: endOfMonth
+                }
             }
         },
         {

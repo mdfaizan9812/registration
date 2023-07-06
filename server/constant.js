@@ -53,8 +53,9 @@ module.exports.message = {
     "msg51": "No data found",
     "msg52": "You can not update others's borrow or lent",
     "msg53": "Updated successfully",
-    "msg53": "Deleted successfully",
     "msg54": "Fetched successfully",
+    "msg55": "Deleted successfully",
+    "msg56": "keys should be numbers",
 }
 
 
