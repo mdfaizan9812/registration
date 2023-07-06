@@ -4,7 +4,7 @@ const expenseApis = require('./api');
 const expenseValidation = require('./validation.js');
 const userServices = require('../users/service');
 
-Router.get("/paymentMethod",
+Router.get("/totalExpensePC",
     userServices.verifyUser,
     expenseValidation.validateKeysAndType,
     expenseApis.getTotalExpenseByPaymentMethodOrCategory
@@ -29,7 +29,7 @@ Router.route("/:id")
     )
 
 Router.get("/", userServices.verifyUser, expenseApis.getAllExpensesByMonth);
-Router.get("/date/:id", userServices.verifyUser, expenseApis.getExpenseByDate);
+Router.get("/dateOrCategory/:id", userServices.verifyUser, expenseApis.getExpenseByDate);
 
 
 
